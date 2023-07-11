@@ -13,7 +13,7 @@ export class UserEntity {
   password: string;
 
   @Column()
-  fullname: string;
+  fullName: string;
 
   @OneToMany(() => FileEntity, (file) => file.user)
   files: FileEntity[];
