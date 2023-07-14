@@ -19,16 +19,20 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const userConfig = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('User')
     .setVersion('1.0.0')
     .build();
 
   const userDocs = SwaggerModule.createDocument(app, userConfig);
-  SwaggerModule.setup('docs/user', app, userDocs);
 
-  app.setBaseViewsDir(join(__dirname, '../../templates/', 'views'));
-  app.setViewEngine('hbs');
+  SwaggerModule.setup('docs/user', app, userDocs, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   await app.listen(PORT, () => logger.log(`Server started on port: ${PORT}`));
 }
+
 bootstrap();

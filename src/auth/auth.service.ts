@@ -1,7 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ForbiddenException,
+  HttpStatus,
+  HttpException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -11,32 +16,38 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    // const user = await this.usersService.findOneBy({ email });
+  async signIn(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
 
-    if (user && user.password === password) {
-      const { password, ...result } = user;
-      return result;
+    if (user?.password !== pass) {
+      throw new UnauthorizedException('Failed to authorize');
     }
 
-    return null;
+    const payload = { fullName: user.fullName, id: user.id };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 
   async register(dto: CreateUserDto) {
     try {
-      const userData = await this.usersService.create(dto);
+      const userData = await this.usersService.findByEmail(dto.email);
 
-      return { token: this.jwtService.sign({ id: userData.id }) };
+      if (userData) {
+        throw new HttpException(
+          'User with same email is existing already',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      const user = await this.usersService.create(dto);
+
+      return {
+        access_token: this.jwtService.sign({ id: user.id }),
+      };
     } catch (err) {
-      console.log(err);
-      throw new ForbiddenException('Failed to register the user');
+      throw new ForbiddenException(err);
     }
-  }
-
-  async login(user: UserEntity) {
-    return {
-      token: this.jwtService.sign({ id: user.id }),
-    };
   }
 }

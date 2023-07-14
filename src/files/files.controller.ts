@@ -7,18 +7,17 @@ import {
   MaxFileSizeValidator,
   Get,
   BadRequestException,
-  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
-import { CreateFileDto } from './dto/create-file.dto';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileStorage } from './storage';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { UserId } from 'src/decorators/user-id.decorator';
+import { FileType } from './entities/file.entity';
 
 @Controller('files')
 @ApiTags('Files')
-@UseGuards(JwtAuthGuard)
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
@@ -40,21 +39,22 @@ export class FilesController {
       },
     },
   })
-  uploadFile(
+  create(
     @UploadedFile(
       new ParseFilePipe({
         validators: [new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 })],
       }),
     )
     file: Express.Multer.File,
+    @UserId() userId: number,
   ) {
-    return file;
+    return this.filesService.create(file, userId);
   }
 
   @Get()
-  getAll() {
+  getAll(@UserId() userId: number, @Query('type') fileType: FileType) {
     try {
-      return this.filesService.getAll();
+      return this.filesService.getAll(userId, fileType);
     } catch (err) {
       return new BadRequestException(err);
     }

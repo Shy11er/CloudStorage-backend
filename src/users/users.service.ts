@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { UserId } from 'src/decorators/user-id.decorator';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +23,12 @@ export class UsersService {
     });
   }
 
+  async findAll() {
+    const users = await this.repository.find();
+
+    return users;
+  }
+
   async findByEmail(email: string): Promise<UserEntity | null> {
     const user = await this.repository.findOneBy({ email });
 
@@ -31,4 +38,8 @@ export class UsersService {
 
     return user;
   }
+
+  // async removeAll(id: number) {
+  //   await this.repository.remove();
+  // }
 }

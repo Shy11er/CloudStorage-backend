@@ -9,6 +9,8 @@ import { FilesModule } from './files/files.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/entities/user.entity';
 import { FileEntity } from './files/entities/file.entity';
+import { AuthController } from './auth/auth.controller';
+import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -33,7 +35,7 @@ import { AuthModule } from './auth/auth.module';
     FilesModule,
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [Logger, AppService],
+  controllers: [AppController, AuthController],
+  providers: [Logger, AppService, AuthService],
 })
 export class AppModule {}
