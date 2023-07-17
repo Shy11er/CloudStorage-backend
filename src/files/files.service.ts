@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -42,5 +42,22 @@ export class FilesService {
     });
 
     return dataFile;
+  }
+
+  async remove(userId: number, ids: string) {
+    try {
+      const idsArray = ids.split(',');
+
+      const qb = this.repository.createQueryBuilder('file');
+
+      await qb.where('id IN (:...ids) AND userId = :userId', {
+        ids: idsArray,
+        userId,
+      });
+
+      return qb.softDelete().execute();
+    } catch (err) {
+      throw new BadRequestException(err);
+    }
   }
 }

@@ -9,6 +9,7 @@ import {
   BadRequestException,
   Query,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -62,5 +63,10 @@ export class FilesController {
     } catch (err) {
       return new BadRequestException(err);
     }
+  }
+
+  @Delete()
+  remove(@UserId() userId: number, @Query('ids') ids: string) {
+    return this.filesService.remove(userId, ids);
   }
 }

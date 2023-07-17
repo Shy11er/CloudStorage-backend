@@ -1,29 +1,22 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Param,
-  Delete,
+  UseGuards,
   BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UserId } from 'src/decorators/user-id.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 @ApiTags('Users')
+@ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  async getAll() {
-    return this.usersService.findAll();
-  }
-
   @Get('me')
+  @UseGuards(AuthGuard)
   async getMe(@UserId() userId: number) {
     try {
       return this.usersService.findById(userId);
