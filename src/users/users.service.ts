@@ -32,10 +32,6 @@ export class UsersService {
   async findByEmail(email: string): Promise<UserEntity | null> {
     const user = await this.repository.findOneBy({ email });
 
-    if (!user) {
-      throw new HttpException('User is undefined', HttpStatus.NOT_FOUND);
-    }
-
     return user;
   }
 

@@ -27,6 +27,7 @@ export class AuthService {
 
     return {
       access_token: await this.jwtService.signAsync(payload),
+      // message: 'auth',
     };
   }
 
@@ -45,6 +46,7 @@ export class AuthService {
 
       return {
         access_token: this.jwtService.sign({ id: user.id }),
+        user,
       };
     } catch (err) {
       throw new ForbiddenException(err);

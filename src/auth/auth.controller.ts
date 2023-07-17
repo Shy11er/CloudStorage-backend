@@ -1,6 +1,6 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthGuard } from './auth.guard';
 
@@ -9,7 +9,6 @@ import { AuthGuard } from './auth.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(AuthGuard)
   @Post('login')
   @ApiBody({ type: CreateUserDto })
   async signIn(@Body() signInDto: Record<string, any>) {
@@ -17,6 +16,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @ApiBody({ type: CreateUserDto })
   async register(@Body() dto: CreateUserDto) {
     return this.authService.register(dto);
   }

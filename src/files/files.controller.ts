@@ -8,16 +8,20 @@ import {
   Get,
   BadRequestException,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileStorage } from './storage';
 import { UserId } from 'src/decorators/user-id.decorator';
 import { FileType } from './entities/file.entity';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('files')
 @ApiTags('Files')
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 

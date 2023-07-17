@@ -19,9 +19,9 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const userConfig = new DocumentBuilder()
-    .addBearerAuth()
     .setTitle('User')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
 
   const userDocs = SwaggerModule.createDocument(app, userConfig);
