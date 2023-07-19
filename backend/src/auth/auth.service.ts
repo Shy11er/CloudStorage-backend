@@ -26,7 +26,7 @@ export class AuthService {
     const payload = { fullName: user.fullName, id: user.id };
 
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      _token: await this.jwtService.signAsync(payload),
       // message: 'auth',
     };
   }
@@ -43,9 +43,8 @@ export class AuthService {
       }
 
       const user = await this.usersService.create(dto);
-
       return {
-        access_token: this.jwtService.sign({ id: user.id }),
+        _token: this.jwtService.sign({ id: user.id }),
         user,
       };
     } catch (err) {
